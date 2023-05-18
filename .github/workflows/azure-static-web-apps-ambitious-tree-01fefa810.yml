@@ -32,10 +32,10 @@ jobs:
           app_artifact_location: "build"
           ###### End of Repository/Build Configurations ######
         env:
-          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
-          REACT_APP_KC_URL: ${{ secrets.REACT_APP_KC_URL }}
-          REACT_APP_KC_REALM: ${{ secrets.REACT_APP_KC_REALM }}
-          REACT_APP_KC_CLIENTID: ${{ secrets.REACT_APP_KC_CLIENTID }}
+          REACT_APP_API_URL: ${{ env.REACT_APP_API_URL }}
+          REACT_APP_KC_URL: ${{ env.REACT_APP_KC_URL }}
+          REACT_APP_KC_REALM: ${{ env.REACT_APP_KC_REALM }}
+          REACT_APP_KC_CLIENTID: ${{ env.REACT_APP_KC_CLIENTID }}
 
 
   close_pull_request_job:
