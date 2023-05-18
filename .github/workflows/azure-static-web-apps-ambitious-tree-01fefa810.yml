@@ -31,6 +31,13 @@ jobs:
           output_location: "build" # Built app content directory - optional
           app_artifact_location: "build"
           ###### End of Repository/Build Configurations ######
+        env:
+          REACT_APP_API_URL: "http://localhost:3002"
+          REACT_APP_KC_URL: "http://host.docker.internal:8080"
+          REACT_APP_KC_REALM: "ApplicationMap"
+          REACT_APP_KC_CLIENTID: "web-application-map"
+
+
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
