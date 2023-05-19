@@ -14,7 +14,7 @@ const ProductLeadsEdit = React.lazy(()=> import('./views/ApplicationMap/product-
 const ApplicationsCreate = React.lazy(() => import('./views/ApplicationMap/applications/ApplicationsCreate'))
 
 const routes = [
-  { path: '/', exact: true, name: 'Home', element: ''},
+  { path: '/', exact: true, name: 'Home', element: Dashboard},
   
   { path: '/applications', name: 'Applications', element: Applications },
   { path: '/applications-create', name: 'Applications Create', element: ApplicationsCreate },
