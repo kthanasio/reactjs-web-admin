@@ -31,7 +31,7 @@ const Login = () => {
 							color="primary" 
 							className="px-4" 
 							onClick={async () => { 
-										await keycloak.login({redirectUri: 'http://localhost:3000/#/'}); 
+										await keycloak.login({redirectUri: 'https://appmap.azurewebsites.net/#'}); 
 										}}>
 							Login
 						</CButton>
