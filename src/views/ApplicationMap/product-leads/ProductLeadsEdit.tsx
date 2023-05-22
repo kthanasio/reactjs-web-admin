@@ -18,7 +18,7 @@ import CIcon from '@coreui/icons-react'
 import { cilChevronLeft } from '@coreui/icons'
 
 import { ProductLeadService } from '../../../services'
-import { Toast } from '../toast/Toast'
+import { Toast } from '../Toast/Toast'
 import { useKeycloak } from '@react-keycloak/web'
 
 const ProductLeadEdit = () => {
@@ -40,8 +40,6 @@ const ProductLeadEdit = () => {
     name: '',
     email: '',
     status: '',
-    createdAt: '',
-    updatedAt: '',
   })
   useEffect(() => {
 	if (ROLE_UPDATE) {
@@ -51,7 +49,13 @@ const ProductLeadEdit = () => {
 
   const getProductLead = async (id: string) => {
     const response = await ProductLeadService.get(id)
-    setProductLeadData(response.data)
+	const { _id = '', name, email, status} = response.data
+    setProductLeadData({
+		_id,
+		name,
+		email,
+		status
+	})
   }
 
   const [validated, setValidated] = useState(false)

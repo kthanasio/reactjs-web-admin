@@ -17,7 +17,7 @@ import { cilChevronLeft } from '@coreui/icons';
 import { ProductLeadService } from '../../../services';
 import { IProductLead } from '../../../interfaces';
 import { Link } from 'react-router-dom';
-import { Toast } from '../toast/Toast';
+import { Toast } from '../Toast/Toast';
 import { useKeycloak } from '@react-keycloak/web';
 
 const ProductLeadsCreate = () => {

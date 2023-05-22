@@ -14,11 +14,13 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react';
 import { cilChevronLeft } from '@coreui/icons';
-import { CompanyService } from '../../../services';
 import { ICompany } from '../../../interfaces';
 import { Link } from 'react-router-dom';
-import { Toast } from '../toast/Toast';
 import { useKeycloak } from '@react-keycloak/web';
+import { useCreateMutate } from '../../../hooks/Companies/useCreateMutate';
+import { Toast } from '../Toast/Toast';
+import { AxiosError } from 'axios';
+import { Loader } from '../Loader/Loader';
 
 const CompanyCreate = () => {
 	const kc = useKeycloak();
@@ -29,62 +31,46 @@ const CompanyCreate = () => {
 	const [toast, setToast] = useState<JSX.Element>(<></>)
   	const toaster = useRef<HTMLDivElement>(null)
 
-	const [companyData, setCompanyData] = useState<ICompany>({ _id: '',
-																name: '',
-																status: '1',
-																createdAt: undefined,
-																updatedAt: undefined,
-															});
+	const [companyName, setCompanyName] = useState('');
+	const [companyStatus, setCompanyStatus] = useState('1');
 	
-	const [validated, setValidated] = useState(false)
-    const [isEnabled, setIsEnabled] = useState(true)
+	const [isEnabled, setIsEnabled] = useState(true)
+
+	const { mutate, isSuccess, isError, isLoading, error } = useCreateMutate()
 
 	const handleSubmit = async (event: any) => {
 		event.preventDefault()
-		event.stopPropagation()
-		const form = event.currentTarget
-		console.log(form)
-		setValidated(true)
-	  await CompanyService.create({
-		  name: companyData.name,
-		  status: companyData.status
-	  })
-	  .then(() => {
-		setToast(Toast( { message: 'Company Created Successfully!',color: 'success'}))
-		setCompanyData({ _id: '',
-						name: '',
-						status: isEnabled ? '1' : '0',
-						createdAt: undefined,
-						updatedAt: undefined,
-						})
-		setValidated(false)
-		})
-	  .catch((e) => { 
-			setToast(Toast( { message: e.response.data.message,color: 'danger'}))
-		});
+		const company: ICompany = {
+			name: companyName,
+			status: companyStatus
+		}
+		mutate(company)
 	}
+
+	useEffect( () => {
+		if (isSuccess) {
+			setToast(Toast( { message: 'Company Created Successfully!',color: 'success'}))
+		}
+	}, [ isSuccess ])
+
+	useEffect( () => {
+		if (isError && error instanceof AxiosError) {
+			setToast(Toast( { message: JSON.stringify(error.response?.data.message) ,color: 'danger'}))
+		}
+	}, [ isError, error ])
   
-	const handleNameChange = async (e: any) => {
-	  const name = e.target.value;
-	  setCompanyData(prevState => ({
-		  ...prevState,
-		  name: name
-	  }))
-	}
 	const handleStatusChange = async () => {
 		setIsEnabled(current => !isEnabled)
 	}
+	
 	useEffect(()=> {
-		setCompanyData(prevState => ({
-			...prevState,
-			status: isEnabled ? '1' : '0'
-			}))
-
+		setCompanyStatus(() => { return isEnabled ? '1' : '0' })
 	}, [isEnabled])
   
 	return (
 	<>
 		{ !ROLE_CREATE && <><span>Permission Required</span></>}
+		{ isLoading && <><span><Loader /></span></>}
 		{ !!ROLE_CREATE &&
 		<CRow>
 			<CCol xs={12}>
@@ -96,14 +82,13 @@ const CompanyCreate = () => {
 				<CCardBody>
 					<CForm
 						className="column g-1 needs-validation"
-						validated={validated}
 						onSubmit={handleSubmit}>
 						<CRow className="d-grid p-1">
 							<CCol md={12} className='mb-3'>
 								<CFormInput
 									type="text"
-									value={ companyData.name }
-									onChange={handleNameChange}
+									value={ companyName }
+									onChange={ (e) => setCompanyName(e.target.value)}
 									id="companyName"
 									label="Name"
 									required
@@ -115,9 +100,9 @@ const CompanyCreate = () => {
 										label="Enabled" 
 										type='checkbox' 
 										id="company-status-checkbox" 
-										value={companyData.status} 
+										value={companyStatus} 
 										defaultChecked 
-										onClick={handleStatusChange}/>
+										onChange={handleStatusChange}/>
 							</CCol>	
 						</CRow>
 						<CRow className="g-1 m-1">

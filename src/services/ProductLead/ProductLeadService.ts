@@ -1,36 +1,34 @@
+import { AxiosResponse } from "axios";
 import http from "../../common/http-common";
 import { IProductLead } from "../../interfaces";
 
 const MAIN_RESOURCE=`/product-leads`
 
 class ProductLeadService {
-  getAll() {
-    return http.get(`${MAIN_RESOURCE}`);
+  async getAll(): Promise<AxiosResponse<IProductLead[]>> {
+    return await http.get(`${MAIN_RESOURCE}`);
   }
 
-  get(id: string) {
-    return http.get(`${MAIN_RESOURCE}/${id}`);
+  async get(id: string): Promise<AxiosResponse<IProductLead>> {
+    return await http.get(`${MAIN_RESOURCE}/${id}`);
   }
 
-  create(data: IProductLead) {
-    return http.post(`${MAIN_RESOURCE}`, data);
+  async create(data: IProductLead): Promise<AxiosResponse<IProductLead>> {
+    return await http.post(`${MAIN_RESOURCE}`, data);
   }
 
-  update(id: string, data: IProductLead) {
-    return http.put(`${MAIN_RESOURCE}/${id}`, data);
+  async update(id: string, data: IProductLead): Promise<AxiosResponse<IProductLead>> {
+    return await http.put(`${MAIN_RESOURCE}/${id}`, data);
   }
 
-  delete(id: string) {
-    return http.delete(`${MAIN_RESOURCE}/${id}`);
+  async delete(id: string): Promise<AxiosResponse<IProductLead>> {
+    return await http.delete(`${MAIN_RESOURCE}/${id}`);
   }
 
-  deleteAll() {
-    return http.delete(`${MAIN_RESOURCE}`);
-  }
-
-  findByName(name: string) {
-    return http.get(`${MAIN_RESOURCE}?name=${name}`);
+  async findByName(name: string): Promise<AxiosResponse<IProductLead[]>> {
+    return await http.get(`${MAIN_RESOURCE}?name=${name}`);
   }
 }
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default new ProductLeadService();

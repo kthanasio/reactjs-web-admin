@@ -10,11 +10,12 @@ import {
   CForm,
   CRow,
 } from '@coreui/react'
+import { Loader } from '../ApplicationMap/Loader/Loader';
 const Login = () => {
   const { keycloak, initialized } = useKeycloak();
 
   return (
-    (!initialized ? <div><h1>Loading...</h1></div> : <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
+    (!initialized ? <div><h1><Loader /></h1></div> : <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={3}>
@@ -31,7 +32,7 @@ const Login = () => {
 							color="primary" 
 							className="px-4" 
 							onClick={async () => { 
-										await keycloak.login({redirectUri: 'https://appmap.azurewebsites.net/#/'}); 
+										await keycloak.login(); 
 										}}>
 							Login
 						</CButton>

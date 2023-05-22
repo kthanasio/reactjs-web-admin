@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import { useParams } from 'react-router';
 import { Link } from "react-router-dom";
 
@@ -17,9 +17,12 @@ import {
 import CIcon from '@coreui/icons-react';
 import { cilChevronLeft } from '@coreui/icons';
 
-import { CompanyService } from '../../../services';
-import { Toast } from '../toast/Toast';
+import { Toast } from '../Toast/Toast';
 import { useKeycloak } from '@react-keycloak/web';
+import { Loader } from '../Loader/Loader';
+import { useUpdateMutate } from '../../../hooks/Companies/useUpdateMutate';
+import { AxiosError } from 'axios';
+import { CompanyService } from '../../../services';
 
 const CompanyEdit = () => {
   const kc = useKeycloak();
@@ -29,67 +32,64 @@ const CompanyEdit = () => {
 
   const [toast, setToast] = useState<JSX.Element>(<></>)
   const toaster = useRef<HTMLDivElement>(null)
+
+  const [companyName, setCompanyName] = useState('');
+  const [companyStatus, setCompanyStatus] = useState('1');
+  
+  const [isEnabled, setIsEnabled] = useState(true)
+
   const params = useParams()
-  const [companyData, setCompanyData] = useState({ _id: '',
-													name: '',
-													status: '',
-													createdAt: '',
-													updatedAt: '',
-												});
-  useEffect(() => {
-	if (ROLE_UPDATE) {
-		getCompany(params?.id?.split('&')[0] || '');
-	}
-  }, [ params.id, ROLE_UPDATE ]);
+  const { id = '' } = params
 
-  const getCompany = async (id: string) => {
-	const response = await CompanyService.get(id);
-	setCompanyData(response.data)
-  };
-
-  const [validated, setValidated] = useState(false)
-  const handleSubmit = async (event: any) => {
-    const form = event.currentTarget
-      event.preventDefault()
-      event.stopPropagation()
-    setValidated(true)
-	await CompanyService.update(params?.id || '', {
-		name: companyData.name,
-		status: companyData.status
+  useEffect(()=>{
+	CompanyService.get(id).then((response): void => {
+		const { name, status } = response.data
+		setCompanyName(name)
+		setCompanyStatus(status)	
 	})
-	.then( ()=> {
+  }, [])
+
+  const { mutate, isSuccess, isError, isLoading, error } = useUpdateMutate()
+
+  const handleSubmit = async (event: any) => {
+    event.preventDefault()
+	
+	const companyData = {
+		name: companyName,
+		status: companyStatus
+	}
+
+	mutate({ 
+		id: id,
+		data: companyData
+	})
+  }
+
+  useEffect( () => { 
+	if (isSuccess) {
 		setToast(Toast( { message: 'Company Updated Successfully!',color: 'success'}))
-	} )
-	.catch((e) => { 
-		setToast(Toast( { message: e.response.data.message,color: 'danger'}))
-	});
-	setValidated(false)
-	// navigate("/companies")
-  }
+	  }	
+  }, [isSuccess])
 
-  const handleNameChange = async (e: any) => {
-	const name = e.target.value;
-	setCompanyData(prevState => ({
-		...prevState,
-		name: name
-	}))
-  }
-  const [isEnabled, setIsEnabled] = useState(false)
+  useEffect( () => { 
+	if (isError && error instanceof AxiosError) {
+		setToast(Toast( { message: JSON.stringify(error.response?.data.message) ,color: 'danger'}))
+	}
+  }, [isError, error])
+
   useEffect(()=> {
-	setCompanyData(prevState => ({
-		...prevState,
-		status: isEnabled ? '1' : '0'
-		}))
-
+	setCompanyStatus(isEnabled ? '1' : '0' )
 	}, [isEnabled])
 	
 	const handleStatusChange = async () => {
 		setIsEnabled(cur => !isEnabled)
 	}
 
+	
   return (
 	<>
 		{ (!ROLE_UPDATE) && <><span>Permission Required</span></>}
+		{ isLoading && <><span><Loader /></span></>}
 		{ ROLE_UPDATE &&
 
 			<CRow>
@@ -104,15 +104,14 @@ const CompanyEdit = () => {
 						<CForm
 							className="column g-3 needs-validation"
 							noValidate
-							validated={validated}
 							onSubmit={handleSubmit}
 						>
 							<CRow className="d-grid p-1">
 								<CCol md={12} className="mb-3">
 									<CFormInput
 										type="text"
-										value={ companyData.name }
-										onChange={handleNameChange}
+										value={ companyName}
+										onChange={(e) => { setCompanyName(e.target.value)}}
 										id="companyName"
 										label="Name"
 										required
@@ -123,9 +122,9 @@ const CompanyEdit = () => {
 											label="Enabled" 
 											type='checkbox' 
 											id="company-status-checkbox" 
-											value={companyData.status} 
-											checked={companyData.status === '1' ? true : false}
-											onChange={()=> handleStatusChange()}/>
+											value={companyStatus} 
+											checked={ companyStatus === '1' ? true : false }
+											onChange={handleStatusChange}/>
 								</CCol>	
 							</CRow>
 							<CRow className="g-1 m-1">

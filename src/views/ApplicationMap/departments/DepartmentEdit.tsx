@@ -18,7 +18,7 @@ import CIcon from '@coreui/icons-react';
 import { cilChevronLeft } from '@coreui/icons';
 
 import { DepartmentService } from '../../../services';
-import { Toast } from '../toast/Toast';
+import { Toast } from '../Toast/Toast';
 import { useKeycloak } from '@react-keycloak/web';
 
 const DepartmentEdit = () => {
@@ -32,11 +32,9 @@ const DepartmentEdit = () => {
   const toaster = useRef<HTMLDivElement>(null)
   const params = useParams()
   const [departmentData, setDepartmentData] = useState({ _id: '',
-													name: '',
-													status: '',
-													createdAt: '',
-													updatedAt: '',
-												});
+														name: '',
+														status: ''
+														});
   useEffect(() => {
 	if (ROLE_UPDATE) {
 		getDepartment(params?.id?.split('&')[0] || '');
@@ -44,8 +42,15 @@ const DepartmentEdit = () => {
   }, [ params.id ]);
 
   const getDepartment = async (id: string) => {
-	const response = await DepartmentService.get(id);
-	setDepartmentData(response.data)
+	DepartmentService.get(id)
+	.then((response) => {
+		const { _id = '', name, status } = response.data
+		setDepartmentData({
+			_id,
+			name,
+			status,
+		})
+	})
   };
 
   const [validated, setValidated] = useState(false)

@@ -5,6 +5,7 @@ import keycloak from "./Keycloak"
 import { CSpinner } from '@coreui/react';
 import './scss/style.scss'
 import PrivateRoute from './helpers/PrivateRoute';
+import { Loader } from './views/ApplicationMap/Loader/Loader';
 
 // Containers
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
@@ -12,7 +13,7 @@ const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
 const Page500 = React.lazy(() => import('./views/pages/page500'))
 
 const loading = (
-  <CSpinner color="primary"/>
+  <Loader />
 )
 
 class App extends Component {

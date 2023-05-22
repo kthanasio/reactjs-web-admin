@@ -29,7 +29,7 @@ import CIcon from '@coreui/icons-react';
 import { cilPencil, cilPlus, cilTrash} from '@coreui/icons';
 import { DepartmentService } from '../../../services';
 import { IDepartment } from '../../../interfaces';
-import { Toast } from '../toast/Toast';
+import { Toast } from '../Toast/Toast';
 import { useKeycloak } from '@react-keycloak/web';
 
 const Departments = () => {

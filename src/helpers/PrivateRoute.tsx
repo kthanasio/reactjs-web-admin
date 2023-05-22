@@ -1,5 +1,6 @@
 import { useKeycloak } from "@react-keycloak/web";
 import Login from '../views/pages/Login'
+import { Loader } from "../views/ApplicationMap/Loader/Loader";
 
 const PrivateRoute = ({ children }: {children: any}) : JSX.Element => {
 	const { keycloak, initialized} = useKeycloak();
@@ -7,7 +8,7 @@ const PrivateRoute = ({ children }: {children: any}) : JSX.Element => {
 	if (!initialized) {
 		return (
 			<div className="pt-3 text-left">
-				<div className="sk-spinner sk-spinner-pulse">Loading...</div>
+				<div className="sk-spinner sk-spinner-pulse"><Loader /></div>
 			</div>
 		)
 	}	

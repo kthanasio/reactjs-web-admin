@@ -18,7 +18,7 @@ import CIcon from '@coreui/icons-react';
 import { cilChevronLeft } from '@coreui/icons';
 import { IApplication } from '../../../interfaces';
 import { Link } from 'react-router-dom';
-import { Toast } from '../toast/Toast';
+import { Toast } from '../Toast/Toast';
 import { useKeycloak } from '@react-keycloak/web';
 import ApplicationService from '../../../services/Application/ApplicationService';
 
@@ -59,23 +59,44 @@ const ApplicationsCreate = () => {
 	},[])
 
 	const listDepartments = async () => {
-		return await ApplicationService.getDepartments()
-		.then((response) => {
-			setDepartments(response.data)
-		})
+		return ApplicationService.getDepartments()
+				.then((response) => {
+							const result: any = []
+							response.data.forEach((dep) => {
+								result.push({
+									_id: dep._id,
+									name: dep.name
+								})
+							})
+							setDepartments(result)
+						})
 	}
 
 	const listProductLeads = async () => {
-		return await ApplicationService.getProductLeads()
-		.then((response) => {
-			setProductLeads(response.data)
+		return ApplicationService.getProductLeads()
+				.then((response) => {
+							const result: any = []
+							response.data.forEach((pl) => {
+								result.push({
+									_id: pl._id,
+									name: pl.name
+								})
+							})
+			setProductLeads(result)
 		})
 	}
 
 	const listCompanies = async () => {
 		return await ApplicationService.getCompanies()
 		.then((response) => {
-			setCompanies(response.data)
+			const result: any = []
+			response.data.forEach((co) => {
+				result.push({
+					_id: co._id,
+					name: co.name
+				})
+			})
+			setCompanies(result)
 		})
 	}
 

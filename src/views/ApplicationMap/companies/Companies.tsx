@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef } from 'react'
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useKeycloak } from '@react-keycloak/web';
 import dayjs from 'dayjs';
 import {
@@ -28,12 +28,13 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react';
 import { cilPencil, cilPlus, cilTrash} from '@coreui/icons';
-import { CompanyService } from '../../../services';
-import { ICompany } from '../../../interfaces';
-import { Toast } from '../toast/Toast';
+import { Toast } from '../Toast/Toast';
+
+import { useData, useDeleteMutate } from '../../../hooks/Companies';
+import { AxiosError } from 'axios';
+import { Loader } from '../Loader/Loader';
 
 const Companies = () => {
-  const navigate = useNavigate()
   const kc = useKeycloak();
   const RESOURCE_ID = 'backend-application-map'
   
@@ -43,66 +44,47 @@ const Companies = () => {
   const ROLE_UPDATE   = ROLE_ADMIN ? true : kc.keycloak.hasResourceRole('company-update', RESOURCE_ID)
   const ROLE_DELETE = ROLE_ADMIN ? true : kc.keycloak.hasResourceRole('company-delete', RESOURCE_ID)
 
-  const [companiesData, setCompaniesData] = useState<ICompany[]>([]);
-
   const [deleteModalVisible, setDeleteModalVisible] = useState<{open: boolean, id: string}>({open: false, id: ''})
-  const [deleteAproved, setDeleteAproved] = useState(false)
 
   const [toast, setToast] = useState<JSX.Element>(<></>)
   const toaster = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-	if (ROLE_LIST) {
-    	listCompanies();
-	}
-  }, []);
+//   const [nameSearch, setNameSearch] = useState("")
+  const { data } = useData()
+  const { mutate, isSuccess, isError, error, isLoading } = useDeleteMutate()
 
-  const listCompanies = async (name?: string) => {
-	try {
-		let response;
-		if (name !== undefined && name !== '') {
-			response = await CompanyService.findByName(name);
-		} else {
-			response = await CompanyService.getAll();
-		} 
-		setCompaniesData(response.data);
-	} catch (error: any) {
-		setToast(Toast( { message: JSON.stringify(error.message) ,color: 'danger'}))
-		setInterval(() => navigate('/500'), 3000) 
+  useEffect( () => {
+	if (isSuccess) {
+		setDeleteModalVisible({ open: false, id: ''})
+		setToast(Toast( { message: `Company Deleted Successfully!`,color: 'success'}))
 	}
-  };
+	}, [ isSuccess ])
 
-  useEffect(() => {	
-	if (deleteAproved && deleteModalVisible.id !== '') {
-		CompanyService.delete(deleteModalVisible.id)
-		 .then((message)=> { 
-			setToast(Toast( { message: `Company [${message.data.name}] Deleted Successfully!`,color: 'success'})) })
-		 .catch((e) => {
-			console.error(e)
-			setToast(Toast( {message: 'Something went wrong!',color: 'danger'}))
-		 })
-		 .finally(() => {
-			setDeleteModalVisible({ open: false, id: ''})
-			setDeleteAproved(false)
-			listCompanies()
-		});
-	}
-  }, [deleteAproved, deleteModalVisible.id])
+	useEffect( () => {
+		if (isError && error instanceof AxiosError) {
+			setToast(Toast( { message: JSON.stringify(error.response?.data.message) ,color: 'danger'}))
+		}
+	}, [ isError, error ])
 
-  const handleDelete = async (index: number) => {
-	if (!deleteAproved) {
-		setDeleteModalVisible({ open: true, id: companiesData[index]._id || '' });
-	}
+  const handleDelete = async (id: string | undefined) => {
+	setDeleteModalVisible((prevState) => ({
+		...prevState, 
+		open: !prevState.open, 
+		id: id || '' 
+	}));
+	
   }
   
-  const handleSearch = async (e: any) => {
-	const name = e.target.value
-	await listCompanies(name)
-  }
+//   const handleSearch = async (e: any) => {
+// 	const name = e.target.value
+// 	// setNameSearch(name)
+// 	// await listCompanies(name)
+//   }
 
   return (
 	<>
 	{ (!ROLE_LIST) && <><span>Permission Required</span></>}
+	{ isLoading && <><span><Loader /></span></>}
 	{ ROLE_LIST &&
 		<CRow>
 		<CCol md={12}>
@@ -116,16 +98,17 @@ const Companies = () => {
 				{/* search */}
 				<CForm className="d-grid column g-3">
 					<CRow className="p-1">
-						<CCol lg={3} className='pb-3'>
+						{/* <CCol lg={3} className='pb-3'>
 							<CFormInput
 								type="text"
+								// value={nameSearch}
 								onChange={(event) => handleSearch(event)}
 								id="searchCompanyName"
 								label="Search"
 								size='sm'
 								placeholder='Type to start searching...'
 							/>
-						</CCol>
+						</CCol> */}
 						{ ROLE_CREATE && <CCol className="gap-2 d-sm-flex justify-content-end">
 							<Link to={`/companies-create`} className="d-flex justify-content-start">
 								<CIcon icon={cilPlus} size="lg" className='m-1' /> 
@@ -142,8 +125,9 @@ const Companies = () => {
 					</CModalHeader>
 					<CModalBody>Are you sure?</CModalBody>
 					<CModalFooter>
+						{/* <small>{deleteModalVisible.id}</small> */}
 						<CButton color="secondary" onClick={() => setDeleteModalVisible({ open: false, id: '' })}>Cancel</CButton>
-						<CButton color="danger" onClick={()=> setDeleteAproved(true)}>Delete</CButton>
+						<CButton color="danger" onClick={() => mutate(deleteModalVisible.id)}>Delete</CButton>
 					</CModalFooter>
 				</CModal>
 
@@ -160,7 +144,7 @@ const Companies = () => {
 					</CTableRow>
 				</CTableHead>
 				<CTableBody>
-					{companiesData && companiesData.map((company, index) => (
+					{data && data.map((company, index) => (
 						<CTableRow key={company._id}>
 						<CTableDataCell>{ company.name }</CTableDataCell>
 						<CTableDataCell>
@@ -178,7 +162,7 @@ const Companies = () => {
 							</Link>}
 						</CTableDataCell>
 						<CTableDataCell>
-							{ROLE_DELETE && <CIcon className="d-grid justify-content-center" icon={cilTrash} size="lg" onClick={() => handleDelete(index)}/>}
+							{ROLE_DELETE && <CIcon className="d-grid justify-content-center" icon={cilTrash} size="lg" onClick={() => handleDelete(company._id)}/>}
 						</CTableDataCell>
 					</CTableRow>
 					))}
