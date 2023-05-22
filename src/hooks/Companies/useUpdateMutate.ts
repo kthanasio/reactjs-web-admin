@@ -1,6 +1,6 @@
 import { CompanyService } from "../../services";
 import { ICompany } from "../../interfaces";
-import { QueryClient, useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from "axios";
 
 const putData = async ({id, data}: {id: string, data: ICompany}): Promise<AxiosResponse<ICompany>> => {
@@ -11,7 +11,7 @@ const putData = async ({id, data}: {id: string, data: ICompany}): Promise<AxiosR
   };
 
 export function useUpdateMutate () {
-	const queryClient = new QueryClient()
+	const queryClient = useQueryClient()
 	const mutate = useMutation({ 
 		mutationFn: putData,
 		onSuccess: () => {
