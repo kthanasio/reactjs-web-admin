@@ -18,7 +18,7 @@ import CIcon from '@coreui/icons-react';
 import { cilChevronLeft } from '@coreui/icons';
 import { IApplication } from '../../../interfaces';
 import { Link } from 'react-router-dom';
-import { Toast } from '../Toast/Toast';
+import { Toast } from '../toast/Toast';
 import { useKeycloak } from '@react-keycloak/web';
 import ApplicationService from '../../../services/Application/ApplicationService';
 

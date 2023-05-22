@@ -28,7 +28,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react';
 import { cilPencil, cilPlus, cilTrash} from '@coreui/icons';
-import { Toast } from '../Toast/Toast';
+import { Toast } from '../toast/Toast';
 
 import { useData, useDeleteMutate } from '../../../hooks/Companies';
 import { AxiosError } from 'axios';

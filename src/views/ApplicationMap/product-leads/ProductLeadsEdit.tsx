@@ -18,7 +18,7 @@ import CIcon from '@coreui/icons-react'
 import { cilChevronLeft } from '@coreui/icons'
 
 import { ProductLeadService } from '../../../services'
-import { Toast } from '../Toast/Toast'
+import { Toast } from '../toast/Toast'
 import { useKeycloak } from '@react-keycloak/web'
 
 const ProductLeadEdit = () => {

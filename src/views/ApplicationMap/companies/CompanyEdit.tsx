@@ -17,7 +17,7 @@ import {
 import CIcon from '@coreui/icons-react';
 import { cilChevronLeft } from '@coreui/icons';
 
-import { Toast } from '../Toast/Toast';
+import { Toast } from '../toast/Toast';
 import { useKeycloak } from '@react-keycloak/web';
 import { Loader } from '../Loader/Loader';
 import { useUpdateMutate } from '../../../hooks/Companies/useUpdateMutate';

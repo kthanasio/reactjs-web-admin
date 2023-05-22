@@ -18,7 +18,7 @@ import { ICompany } from '../../../interfaces';
 import { Link } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 import { useCreateMutate } from '../../../hooks/Companies/useCreateMutate';
-import { Toast } from '../Toast/Toast';
+import { Toast } from '../toast/Toast';
 import { AxiosError } from 'axios';
 import { Loader } from '../Loader/Loader';
 

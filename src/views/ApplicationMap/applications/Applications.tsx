@@ -33,11 +33,12 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react';
 import { cilPencil, cilPlus, cilTrash, cilFilter, cilHistory} from '@coreui/icons';
-import { Toast } from '../Toast/Toast';
 import { useKeycloak } from '@react-keycloak/web';
+
 import { IApplication } from '../../../interfaces';
 import ApplicationService from '../../../services/Application/ApplicationService';
 import keycloak from '../../../Keycloak';
+import { Toast } from '../toast/Toast';
 
 const Applications = () => {
   const navigate = useNavigate()
