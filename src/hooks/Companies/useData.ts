@@ -15,8 +15,8 @@ const fetchData = async (name?: string): Promise<AxiosResponse<ICompany[]>> => {
 
 export function useData (name?: string) {
 	const query = useQuery({ 
-		queryKey: ['company-data'], 
-		queryFn: () => fetchData()})
+		queryKey: ['company-data', name], 
+		queryFn: () => fetchData(name)})
 
 	return {
 		...query,

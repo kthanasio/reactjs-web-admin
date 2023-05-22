@@ -33,8 +33,10 @@ import { Toast } from '../toast/Toast';
 import { useData, useDeleteMutate } from '../../../hooks/Companies';
 import { AxiosError } from 'axios';
 import { Loader } from '../Loader/Loader';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Companies = () => {
+  const queryClient = useQueryClient()
   const kc = useKeycloak();
   const RESOURCE_ID = 'backend-application-map'
   
@@ -49,8 +51,9 @@ const Companies = () => {
   const [toast, setToast] = useState<JSX.Element>(<></>)
   const toaster = useRef<HTMLDivElement>(null)
 
-//   const [nameSearch, setNameSearch] = useState("")
-  const { data } = useData()
+  const [nameSearch, setNameSearch] = useState("")
+
+  const { data } = useData(nameSearch)
   const { mutate, isSuccess, isError, error, isLoading } = useDeleteMutate()
 
   useEffect( () => {
@@ -75,11 +78,14 @@ const Companies = () => {
 	
   }
   
-//   const handleSearch = async (e: any) => {
-// 	const name = e.target.value
-// 	// setNameSearch(name)
-// 	// await listCompanies(name)
-//   }
+  const handleSearch = async (e: any) => {
+	e.preventDefault()
+	e.stopPropagation()
+	const name = e.target.value
+	setNameSearch(name)
+	// await queryClient.cancelQueries()
+	// await queryClient.refetchQueries({ queryKey: ['company-data']})
+  }
 
   return (
 	<>
@@ -98,17 +104,17 @@ const Companies = () => {
 				{/* search */}
 				<CForm className="d-grid column g-3">
 					<CRow className="p-1">
-						{/* <CCol lg={3} className='pb-3'>
+						<CCol lg={3} className='pb-3'>
 							<CFormInput
 								type="text"
-								// value={nameSearch}
+								value={nameSearch}
 								onChange={(event) => handleSearch(event)}
 								id="searchCompanyName"
 								label="Search"
 								size='sm'
 								placeholder='Type to start searching...'
 							/>
-						</CCol> */}
+						</CCol>
 						{ ROLE_CREATE && <CCol className="gap-2 d-sm-flex justify-content-end">
 							<Link to={`/companies-create`} className="d-flex justify-content-start">
 								<CIcon icon={cilPlus} size="lg" className='m-1' /> 
