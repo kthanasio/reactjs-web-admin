@@ -77,7 +77,7 @@ const Applications = () => {
 	}
 	catch (error: any) {
 		setToast(Toast( { message: JSON.stringify(error.message) ,color: 'danger'}))
-		navigate('/500')
+		// navigate('/500')
 	}
   };
 
