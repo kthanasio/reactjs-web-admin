@@ -1,8 +1,7 @@
 import React, { Component, Suspense } from 'react'
-import { HashRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ReactKeycloakProvider } from "@react-keycloak/web";
 import keycloak from "./Keycloak"
-import { CSpinner } from '@coreui/react';
 import './scss/style.scss'
 import PrivateRoute from './helpers/PrivateRoute';
 import { Loader } from './views/ApplicationMap/Loader/Loader';
@@ -21,7 +20,7 @@ render() {
 	return (
 		<div>
 			<ReactKeycloakProvider authClient={keycloak} >
-      			<HashRouter>
+      			<BrowserRouter>
 					<Suspense fallback={loading}>
 						<Routes>
 							<Route path="/500" element={<Page500 />} />
@@ -33,7 +32,7 @@ render() {
 											} />
 						</Routes>
 					</Suspense>
-      			</HashRouter>
+				</BrowserRouter>
 	  		</ReactKeycloakProvider>
 	  </div>
     )
